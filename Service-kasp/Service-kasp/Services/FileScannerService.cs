@@ -9,25 +9,32 @@ namespace Service_kasp.Services
 
     public class FileScannerService : IFileScanner
     {
-        //доделать ошибки доступа
 
 
 
-        readonly Dictionary<string, string[]> susStrings;
+        readonly Dictionary<string, string[]> susStrings = new Dictionary<string, string[]>();
 
         public FileScannerService(IConfiguration configuration)
         {
-            susStrings = JsonSerializer.Deserialize<Dictionary<string, string[]>>(System.IO.File.ReadAllText(configuration["susStingsFilePath"]));
+            if (!File.Exists(configuration["susStingsFilePath"]))
+            {
+                throw new Exception($"{configuration["susStingsFilePath"]} does not exist");
+            }
+            string jsonString = File.ReadAllText(configuration["susStingsFilePath"]);
+            susStrings = JsonSerializer.Deserialize<Dictionary<string, string[]>>(jsonString);
+
         }
+
+
 
         async public Task<ScanResult> ScanDirectoryAsync(string path)
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            ScanResult result = new ScanResult();
-
-            result.scanRecords = new ConcurrentDictionary<string, int>();
-
+            ScanResult result = new ScanResult
+            {
+                ScanRecords = new ConcurrentDictionary<string, int>()
+            };
 
             await ScanDirectoryAsync(path, result);
             stopwatch.Stop();
@@ -40,64 +47,60 @@ namespace Service_kasp.Services
 
             try
             {
-                foreach (string file in Directory.EnumerateFiles(path))
-                {
-                    tasks.Add(ScanFileAsync(file, scanResult));
-                }
                 foreach (string directory in Directory.EnumerateDirectories(path))
                 {
-                    tasks.Add(ScanDirectoryAsync(directory, scanResult));
+                    tasks.Add(Task.Run(() => ScanDirectoryAsync(directory, scanResult)));
+                }
+                foreach (string file in Directory.EnumerateFiles(path))
+                {
+                    tasks.Add(Task.Run(() => ScanFile(file, scanResult)));
                 }
             }
             catch (Exception)
             {
-                lock (scanResult)//переделать
+                lock (scanResult)
                 {
                     scanResult.ErrorCount += 1;
                 }
             }
 
-            await Task.WhenAll(tasks);//обработать токены ошибок в тасках
+            await Task.WhenAll(tasks);
         }
-        async Task ScanFileAsync(string path, ScanResult scanResult)
+        void ScanFile(string path, ScanResult scanResult)//сделать что-то с загрузкой диска при чтении
         {
-            lock (scanResult)//переделать
+            lock (scanResult)
             {
                 scanResult.FilesCount += 1;
             }
-            await Task.Delay(1000);
             try
             {
                 string extention = Path.GetExtension(path);
                 bool hasSpecialLines = susStrings.ContainsKey(extention);//переименовать
-                using (FileStream fs = new FileStream(path, FileMode.Open))
+
+                foreach (string line in File.ReadLines(path))
                 {
-                    using (StreamReader reader = new StreamReader(fs))
+
+                    if (line == null) break;
+                    string? res = susStrings["*"].FirstOrDefault((str) => line.Contains(str));
+                    if (res is not null)
                     {
-                        while (!reader.EndOfStream)
-                        {
-                            string? line = reader.ReadLine();
-                            if (line == null) break;
-                            string? res = susStrings["*"].FirstOrDefault((str) => line.Contains(str));
-                            if (!(res is null))
-                            {
-                                scanResult.scanRecords.AddOrUpdate(res, 1, (key, value) => value + 1);
-                                break;
-                            }
-                            if (!hasSpecialLines) continue;
-                            res = susStrings[extention].FirstOrDefault((str) => line.Contains(str));
-                            if (!(res is null))
-                            {
-                                scanResult.scanRecords.AddOrUpdate(res, 1, (key, value) => value + 1);
-                                break;
-                            }
-                        }
+                        scanResult.ScanRecords.AddOrUpdate(res, 1, (key, value) => value + 1);
+                        break;
                     }
+                    if (!hasSpecialLines) continue;
+                    res = susStrings[extention].FirstOrDefault((str) => line.Contains(str));
+                    if (res is not null)
+                    {
+                        scanResult.ScanRecords.AddOrUpdate(res, 1, (key, value) => value + 1);
+                        break;
+                    }
+
+
                 }
             }
             catch (Exception)
             {
-                lock (scanResult)//переделать
+                lock (scanResult)
                 {
                     scanResult.ErrorCount += 1;
                 }

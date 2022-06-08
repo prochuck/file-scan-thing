@@ -28,10 +28,11 @@ namespace Service_kasp.Controllers
 
         // GET: FileScannerController
         [HttpGet]
-        public async IActionResult ScanFiles(string path)
+        public IActionResult ScanFiles(string path)
         {
             lastId++;//приколы с многопоточностью
-            ScanTasks.Add(lastId, (fileScanner.ScanDirectoryAsync(path)));
+            
+            ScanTasks.Add(lastId, Task<ScanResult>.Run(() => fileScanner.ScanDirectoryAsync(path)));
 
             return new OkObjectResult(lastId);
         }
@@ -42,10 +43,12 @@ namespace Service_kasp.Controllers
             {
                 if (ScanTasks[id].IsCompletedSuccessfully)//доделать
                 {
-                    JsonResult jsonResult = new JsonResult(ScanTasks[id].Result);
-                    jsonResult.ContentType = "application/json";
-                    jsonResult.SerializerSettings = new   JsonSerializerOptions();
-                    jsonResult.StatusCode = 200;
+                    JsonResult jsonResult = new JsonResult(ScanTasks[id].Result)
+                    {
+                        ContentType = "application/json",
+                        SerializerSettings = new JsonSerializerOptions(),
+                        StatusCode = 200
+                    };
                     return Json(jsonResult);
                 }
                 else
