@@ -2,6 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
 using System.Text.Json;
+using Service_kasp.Interface;
+using Service_kasp.Services;
+using Service_kasp.Models;
+using System.Collections.Concurrent;
+
 
 namespace Service_kasp.Controllers
 {
@@ -10,19 +15,22 @@ namespace Service_kasp.Controllers
 
     public  class FileScannerController : Controller
     {
-        FileScanner fileScanner;
-        static Dictionary<int, Task<Dictionary<ScanRecord, int>>> ScanTasks = new Dictionary<int, Task<Dictionary<ScanRecord, int>>>();//переименовать
+        IFileScanner fileScanner;
+
+        //приколы с многопоточностью
+        static Dictionary<int, Task<ScanResult>> ScanTasks = new Dictionary<int, Task<ScanResult>>();//переименовать
         static int lastId = 0;
-        public FileScannerController(IConfiguration configuration)
+
+        public FileScannerController(IFileScanner fileScanner)
         {
-            fileScanner = new FileScanner(configuration["susStingsFilePath"]);
+            this.fileScanner = fileScanner;
         }
 
         // GET: FileScannerController
         [HttpGet]
-        public IActionResult ScanFiles(string path)
+        public async IActionResult ScanFiles(string path)
         {
-            lastId++;
+            lastId++;//приколы с многопоточностью
             ScanTasks.Add(lastId, (fileScanner.ScanDirectoryAsync(path)));
 
             return new OkObjectResult(lastId);
@@ -30,7 +38,22 @@ namespace Service_kasp.Controllers
         [HttpGet]
         public IActionResult GetScanResults(int id)
         {
-            return new OkResult();
+            if (ScanTasks.ContainsKey(id))
+            {
+                if (ScanTasks[id].IsCompletedSuccessfully)//доделать
+                {
+                    JsonResult jsonResult = new JsonResult(ScanTasks[id].Result);
+                    jsonResult.ContentType = "application/json";
+                    jsonResult.SerializerSettings = new   JsonSerializerOptions();
+                    jsonResult.StatusCode = 200;
+                    return Json(jsonResult);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("task in progress");
+                }
+            }
+            return new BadRequestObjectResult("not found");
         }
     }
 }

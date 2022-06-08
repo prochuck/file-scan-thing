@@ -1,7 +1,8 @@
-﻿namespace Service_kasp.Interface
+﻿using Service_kasp.Models;
+namespace Service_kasp.Interface
 {
     public interface IFileScanner
     {
-        public Task<Dictionary<ScanRecord, int>> ScanDirectoryAsync(string path);
+        public Task<ScanResult> ScanDirectoryAsync(string path);
     }
 }
