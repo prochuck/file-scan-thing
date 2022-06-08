@@ -1,0 +1,9 @@
+{
+  "*": [
+    "rm -rf %userprofile%\\Documents",
+    "Rundll32 sus.dll SusEntry"
+  ],
+  ".js": [
+    "<script>evil_script()</script>"
+  ]
+}
