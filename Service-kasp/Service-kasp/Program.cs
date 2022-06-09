@@ -11,8 +11,6 @@ namespace Service_kasp.Controllers
     {
         public static void Main(string[] args)
         {
-
-
             CreateHostBuilder(args).Build().RunAsService();
         }
 
@@ -20,7 +18,6 @@ namespace Service_kasp.Controllers
             WebHost.CreateDefaultBuilder(args)
             .UseContentRoot(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))
                 .UseStartup<Startup>()
-
             ;
     }
 }

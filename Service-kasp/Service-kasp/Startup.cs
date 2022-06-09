@@ -19,8 +19,6 @@ namespace Service_kasp
         {
          
             // Configure the HTTP request pipeline.
-
-
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
