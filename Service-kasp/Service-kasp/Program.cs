@@ -1,23 +1,26 @@
 using Service_kasp.Interface;
 using Service_kasp.Services;
-var builder = WebApplication.CreateBuilder(args);
+using System.Diagnostics;
+using Microsoft.AspNetCore.Hosting.WindowsServices;
+using Microsoft.AspNetCore;
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddSingleton<IFileScanner, FileScannerService>();
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
+namespace Service_kasp.Controllers
+{
+    //востановить https
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
 
 
-app.UseHttpsRedirection();
+            CreateHostBuilder(args).Build().RunAsService();
+        }
 
-app.UseAuthorization();
+        public static IWebHostBuilder CreateHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+            .UseContentRoot(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))
+                .UseStartup<Startup>()
 
-app.MapControllers();
-
-app.Run();
+            ;
+    }
+}

@@ -14,13 +14,14 @@ namespace Service_kasp.Services
 
         readonly Dictionary<string, string[]> susStrings = new Dictionary<string, string[]>();
 
-        public FileScannerService(IConfiguration configuration)
+        public FileScannerService(IWebHostEnvironment hostEnvironment,IConfiguration configuration)
         {
-            if (!File.Exists(configuration["susStingsFilePath"]))
+            
+            if (!File.Exists(hostEnvironment.ContentRootPath+"\\"+configuration["susStingsFilePath"]))
             {
-                throw new Exception($"{configuration["susStingsFilePath"]} does not exist");
+                throw new Exception($"{hostEnvironment.ContentRootPath + "\\" + configuration["susStingsFilePath"]} does not exist");
             }
-            string jsonString = File.ReadAllText(configuration["susStingsFilePath"]);
+            string jsonString = File.ReadAllText(hostEnvironment.ContentRootPath + "\\" + configuration["susStingsFilePath"]);
             susStrings = JsonSerializer.Deserialize<Dictionary<string, string[]>>(jsonString);
 
         }
