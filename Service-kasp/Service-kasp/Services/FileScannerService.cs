@@ -44,25 +44,34 @@ namespace Service_kasp.Services
         async Task ScanDirectoryAsync(string path, ScanResult scanResult)
         {
             List<Task> tasks = new List<Task>();
+            Queue<string> pathesToProcess = new Queue<string>() ;
+            pathesToProcess.Enqueue(path);
+            while (pathesToProcess.Count!=0)
+            {
+                string curentPath=pathesToProcess.Dequeue();
+                try
+                {
+                    
+                    foreach (string directory in Directory.EnumerateDirectories(curentPath))
+                    {
+                        pathesToProcess.Enqueue(directory);
+                    }
+                    foreach (string file in Directory.EnumerateFiles(curentPath))
+                    {
+                        tasks.Add(Task.Run(() => ScanFile(file, scanResult)));
+                    }
+                }
+                catch (Exception)
+                {
+                    lock (scanResult)
+                    {
+                        scanResult.ErrorCount += 1;
+                    }
+                }
 
-            try
-            {
-                foreach (string directory in Directory.EnumerateDirectories(path))
-                {
-                    tasks.Add(Task.Run(() => ScanDirectoryAsync(directory, scanResult)));
-                }
-                foreach (string file in Directory.EnumerateFiles(path))
-                {
-                    tasks.Add(Task.Run(() => ScanFile(file, scanResult)));
-                }
             }
-            catch (Exception)
-            {
-                lock (scanResult)
-                {
-                    scanResult.ErrorCount += 1;
-                }
-            }
+
+           
 
             await Task.WhenAll(tasks);
         }

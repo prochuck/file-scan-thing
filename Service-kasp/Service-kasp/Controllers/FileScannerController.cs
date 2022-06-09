@@ -30,10 +30,15 @@ namespace Service_kasp.Controllers
         [HttpGet]
         public IActionResult ScanFiles(string path)
         {
-            lastId++;//приколы с многопоточностью
-            
-            ScanTasks.Add(lastId, Task<ScanResult>.Run(() => fileScanner.ScanDirectoryAsync(path)));
-
+            if (!Directory.Exists(path))
+            {
+                return new BadRequestObjectResult("Directory does not exist");
+            }
+            lock (ScanTasks)
+            {
+                lastId++;
+                ScanTasks.Add(lastId, Task<ScanResult>.Run(() => fileScanner.ScanDirectoryAsync(path)));
+            }
             return new OkObjectResult(lastId);
         }
         [HttpGet]
@@ -49,7 +54,7 @@ namespace Service_kasp.Controllers
                         SerializerSettings = new JsonSerializerOptions(),
                         StatusCode = 200
                     };
-                    return Json(jsonResult);
+                    return jsonResult;
                 }
                 else
                 {
