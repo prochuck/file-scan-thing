@@ -58,10 +58,10 @@ namespace Service_kasp.Controllers
                 }
                 else
                 {
-                    return new BadRequestObjectResult("task in progress");
+                    return new BadRequestObjectResult("Task in progress");
                 }
             }
-            return new BadRequestObjectResult("not found");
+            return new BadRequestObjectResult("Task not found");
         }
     }
 }

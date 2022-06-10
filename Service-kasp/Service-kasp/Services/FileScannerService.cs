@@ -17,11 +17,11 @@ namespace Service_kasp.Services
         public FileScannerService(IWebHostEnvironment hostEnvironment,IConfiguration configuration)
         {
             
-            if (!File.Exists(hostEnvironment.ContentRootPath+"\\"+configuration["susStingsFilePath"]))
+            if (!File.Exists(hostEnvironment.ContentRootPath+"\\"+configuration["SusStingsFilePath"]))
             {
-                throw new Exception($"{hostEnvironment.ContentRootPath + "\\" + configuration["susStingsFilePath"]} does not exist");
+                throw new Exception($"File {hostEnvironment.ContentRootPath + "\\" + configuration["SusStingsFilePath"]} does not exist");
             }
-            string jsonString = File.ReadAllText(hostEnvironment.ContentRootPath + "\\" + configuration["susStingsFilePath"]);
+            string jsonString = File.ReadAllText(hostEnvironment.ContentRootPath + "\\" + configuration["SusStingsFilePath"]);
             susStrings = JsonSerializer.Deserialize<Dictionary<string, string[]>>(jsonString);
 
         }
