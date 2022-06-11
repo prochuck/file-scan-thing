@@ -13,12 +13,12 @@ namespace Service_kasp.Controllers
     [ApiController]
     [Route("[controller]/[action]")]
 
-    public  class FileScannerController : Controller
+    public class FileScannerController : Controller
     {
         IFileScanner fileScanner;
 
         //приколы с многопоточностью
-        static Dictionary<int, Task<ScanResult>> ScanTasks = new Dictionary<int, Task<ScanResult>>();//переименовать
+        public static Dictionary<int, Task<ScanResult>> ScanTasks = new Dictionary<int, Task<ScanResult>>();//переименовать
         static int lastId = 0;
 
         public FileScannerController(IFileScanner fileScanner)
@@ -39,7 +39,7 @@ namespace Service_kasp.Controllers
                 lastId++;
                 ScanTasks.Add(lastId, Task<ScanResult>.Run(() => fileScanner.ScanDirectoryAsync(path)));
             }
-            return new OkObjectResult(lastId);
+            return new OkObjectResult($"Scan task was created with ID: {lastId}");
         }
         [HttpGet]
         public IActionResult GetScanResults(int id)
@@ -58,10 +58,10 @@ namespace Service_kasp.Controllers
                 }
                 else
                 {
-                    return new BadRequestObjectResult("Task in progress");
+                    return new BadRequestObjectResult("Scan task in progress, please wait");
                 }
             }
-            return new BadRequestObjectResult("Task not found");
+            return new BadRequestObjectResult("Scan task not found");
         }
     }
 }

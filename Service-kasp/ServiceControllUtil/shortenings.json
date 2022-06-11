@@ -1,0 +1,5 @@
+{
+  "<script>evil_script()</script>": "JS",
+  "rm -rf %userprofile%\\Documents": "rm -rf",
+  "Rundll32 sus.dll SusEntry": "Rundll32"
+}

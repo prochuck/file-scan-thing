@@ -34,12 +34,13 @@ namespace Service_kasp.Services
             stopwatch.Start();
             ScanResult result = new ScanResult
             {
-                ScanRecords = new ConcurrentDictionary<string, int>()
+                ScanRecords = new ConcurrentDictionary<string, int>(),
+                Directory = path
             };
 
             await ScanDirectoryAsync(path, result);
             stopwatch.Stop();
-            result.TimeSpent = stopwatch.Elapsed.TotalSeconds;
+            result.TimeSpent = stopwatch.Elapsed.Ticks;
             return result;
         }
         async Task ScanDirectoryAsync(string path, ScanResult scanResult)

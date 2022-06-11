@@ -13,7 +13,13 @@ namespace Service_kasp.Controllers
         {
             CreateHostBuilder(args).Build().RunAsService();
         }
-
+        public static void OnStop()
+        {
+            foreach (Task task in FileScannerController.ScanTasks.Values)
+            {
+                task.Dispose();
+            }  
+        }
         public static IWebHostBuilder CreateHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
             .UseContentRoot(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))

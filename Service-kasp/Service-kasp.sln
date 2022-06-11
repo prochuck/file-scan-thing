@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service-kasp", "Service-kasp\Service-kasp.csproj", "{D3ACDAFA-BEC0-48B8-9063-C93C3D3E1DC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service-kasp", "Service-kasp\Service-kasp.csproj", "{D3ACDAFA-BEC0-48B8-9063-C93C3D3E1DC2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceControllUtil", "ServiceControllUtil\ServiceControllUtil.csproj", "{824B9908-1799-4911-9C2C-F34EF83C995B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D3ACDAFA-BEC0-48B8-9063-C93C3D3E1DC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3ACDAFA-BEC0-48B8-9063-C93C3D3E1DC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3ACDAFA-BEC0-48B8-9063-C93C3D3E1DC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{824B9908-1799-4911-9C2C-F34EF83C995B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{824B9908-1799-4911-9C2C-F34EF83C995B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{824B9908-1799-4911-9C2C-F34EF83C995B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{824B9908-1799-4911-9C2C-F34EF83C995B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

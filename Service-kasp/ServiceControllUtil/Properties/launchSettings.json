@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ServiceControllUtil": {
+      "commandName": "Project",
+      "commandLineArgs": "status 3"
+    }
+  }
+}
