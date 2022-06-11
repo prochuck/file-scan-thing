@@ -13,7 +13,7 @@ namespace ServiceControllUtil
 #if DEBUG
         const string ServiceName = "Korolko-Kaspersky-test-filescanner-dev";
 #else
-    public static const serviceName= "Korolko-Kaspersky-test-filescanner-";
+        const string ServiceName = "Korolko-Kaspersky-test-filescanner";
 #endif
         static ServiceController service;
         public static void Main(string[] args)
@@ -21,10 +21,12 @@ namespace ServiceControllUtil
             try
             {
                 service = new ServiceController(ServiceName);
-            } 
+                ServiceControllerStatus status = service.Status;
+            }
             catch (Exception)
             {
                 Console.WriteLine("Service is not installed");
+                return;
             }
             switch (args.Length)
             {
@@ -69,8 +71,8 @@ namespace ServiceControllUtil
             if (service.Status == ServiceControllerStatus.Running)
             {
                 service.Stop();
-                service.WaitForStatus(ServiceControllerStatus.Stopped,TimeSpan.FromSeconds(10));
-                if (service.Status!= ServiceControllerStatus.Stopped)
+                service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(10));
+                if (service.Status != ServiceControllerStatus.Stopped)
                 {
                     Console.WriteLine("Something gone wrong. Service is not stopped.");
                 }
@@ -79,7 +81,7 @@ namespace ServiceControllUtil
                     Console.WriteLine("Scan service was stopped.");
                 }
             }
-            else if(service.Status == ServiceControllerStatus.Stopped)
+            else if (service.Status == ServiceControllerStatus.Stopped)
             {
                 service.Start();
                 service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(10));

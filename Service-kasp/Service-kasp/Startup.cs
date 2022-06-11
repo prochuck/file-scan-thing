@@ -12,12 +12,10 @@ namespace Service_kasp
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSingleton<IFileScanner, FileScannerService>();
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-         
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapControllers());

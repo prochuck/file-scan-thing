@@ -6,14 +6,21 @@ using Service_kasp.Models;
 namespace Service_kasp.Services
 {
 
-
+    /// <summary>
+    /// Служба, отвечающая за проведение сканирования директорий
+    /// </summary>
     public class FileScannerService : IFileScanner
     {
 
 
-
+        /// <summary>
+        /// Список подозрительных строк
+        /// </summary>
         readonly Dictionary<string, string[]> susStrings = new Dictionary<string, string[]>();
 
+        /// <summary>
+        /// 
+        /// </summary>
         public FileScannerService(IWebHostEnvironment hostEnvironment,IConfiguration configuration)
         {
             
@@ -27,7 +34,11 @@ namespace Service_kasp.Services
         }
 
 
-
+        /// <summary>
+        /// Асинхронное сканирования директорий.
+        /// </summary>
+        /// <param name="path">путь к директории для сканирования</param> 
+        /// <returns></returns>
         async public Task<ScanResult> ScanDirectoryAsync(string path)
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -77,7 +88,7 @@ namespace Service_kasp.Services
 
             await Task.WhenAll(tasks);
         }
-        void ScanFile(string path, ScanResult scanResult)//сделать что-то с загрузкой диска при чтении
+        void ScanFile(string path, ScanResult scanResult)
         {
             lock (scanResult)
             {
@@ -86,7 +97,7 @@ namespace Service_kasp.Services
             try
             {
                 string extention = Path.GetExtension(path);
-                bool hasSpecialLines = susStrings.ContainsKey(extention);//переименовать
+                bool hasSpecialLines = susStrings.ContainsKey(extention);
 
                 foreach (string line in File.ReadLines(path))
                 {

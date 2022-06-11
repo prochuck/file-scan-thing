@@ -34,11 +34,11 @@ namespace ServiceControllUtil
             try
             {
                 response = client.GetAsync(uriBuilder.Uri).Result;
-                return response.Content.ReadAsStringAsync().Result;//переделать добавление атрибута
+                return response.Content.ReadAsStringAsync().Result;
             }
             catch (Exception ex)
             {
-                return "Что-то пошло не так";//переделать на английский всё
+                return "Something gone wrong";
             }
 
 
@@ -67,11 +67,11 @@ namespace ServiceControllUtil
                     ScanResult scanResult = JsonSerializer.Deserialize<ScanResult>(response.Content.ReadAsStringAsync().Result);
                     return ScanResultToString(scanResult);
                 }
-                return response.Content.ReadAsStringAsync().Result;//переделать добавление атрибута
+                return response.Content.ReadAsStringAsync().Result;
             }
             catch (Exception ex)
             {
-                return "Что-то пошло не так";//переделать на английский всё
+                return "Something gone wrong";
             }
 
 

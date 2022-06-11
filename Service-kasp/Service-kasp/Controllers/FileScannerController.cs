@@ -17,8 +17,7 @@ namespace Service_kasp.Controllers
     {
         IFileScanner fileScanner;
 
-        //приколы с многопоточностью
-        public static Dictionary<int, Task<ScanResult>> ScanTasks = new Dictionary<int, Task<ScanResult>>();//переименовать
+        public static Dictionary<int, Task<ScanResult>> ScanTasks = new Dictionary<int, Task<ScanResult>>();
         static int lastId = 0;
 
         public FileScannerController(IFileScanner fileScanner)
@@ -26,7 +25,6 @@ namespace Service_kasp.Controllers
             this.fileScanner = fileScanner;
         }
 
-        // GET: FileScannerController
         [HttpGet]
         public IActionResult ScanFiles(string path)
         {
@@ -46,7 +44,7 @@ namespace Service_kasp.Controllers
         {
             if (ScanTasks.ContainsKey(id))
             {
-                if (ScanTasks[id].IsCompletedSuccessfully)//доделать
+                if (ScanTasks[id].IsCompletedSuccessfully)
                 {
                     JsonResult jsonResult = new JsonResult(ScanTasks[id].Result)
                     {

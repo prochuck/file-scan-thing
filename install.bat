@@ -1,3 +1,4 @@
+@echo off
 rem запуск от имени администратора
 if not "%1"=="am_admin" (
     powershell -Command "Start-Process -Verb RunAs -FilePath '%0' -ArgumentList 'am_admin'"
@@ -5,8 +6,7 @@ if not "%1"=="am_admin" (
 )
 
 rem регистрация сервиса
-sc create Korolko-Kaspersky-test-filescanner-dev binPath= %~dp0\service\Service-kasp.exe
-sc config Korolko-Kaspersky-test-filescanner-dev obj= "NT AUTHORITY\LocalService" password= ""
+sc create Korolko-Kaspersky-test-filescanner-dev binPath= %~dp0Service-kasp\Service-kasp\bin\Debug\net6.0\Service-kasp.exe
 
 rem разрешение текущему пользователю запускать и останавливать службу
 for /f %%i in ('wmic useraccount where name^="%UserName%" get sid ^| findstr ^S\-d*') do set SID=%%i
