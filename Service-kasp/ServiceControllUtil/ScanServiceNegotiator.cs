@@ -116,7 +116,7 @@ namespace ServiceControllUtil
             }
             result += $"Errors: {scanResult.ErrorCount}\n";
             TimeSpan timeSpan = TimeSpan.FromTicks((long)scanResult.TimeSpent);
-            result += $"Exection time: {timeSpan.ToString(@"ss")}\n";
+            result += $"Exection time: {timeSpan.ToString(@"hh\:mm\:ss")}\n";
             return result;
         }
 
