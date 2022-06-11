@@ -10,16 +10,19 @@ namespace ServiceControllUtil
 
     internal class Program
     {
+        //В зависимости от конфигурации используются разные названия сервиса
 #if DEBUG
         const string ServiceName = "Korolko-Kaspersky-test-filescanner-dev";
 #else
         const string ServiceName = "Korolko-Kaspersky-test-filescanner";
 #endif
+ 
         static ServiceController service;
         public static void Main(string[] args)
         {
             try
             {
+                //проверка сервиса на существование
                 service = new ServiceController(ServiceName);
                 ServiceControllerStatus status = service.Status;
             }
@@ -28,9 +31,11 @@ namespace ServiceControllUtil
                 Console.WriteLine("Service is not installed");
                 return;
             }
+         
             switch (args.Length)
             {
                 case 0:
+                    //в случае отсутсвия команд изменит состояние сервися с running на stop и наоборот
                     SwitchServiceState();
                     break;
                 case 2:
@@ -66,6 +71,9 @@ namespace ServiceControllUtil
                     break;
             }
         }
+        /// <summary>
+        /// Меняет состояние сервиса с running на stop и обратно
+        /// </summary>
         public static void SwitchServiceState()
         {
             if (service.Status == ServiceControllerStatus.Running)

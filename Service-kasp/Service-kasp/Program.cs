@@ -15,7 +15,7 @@ namespace Service_kasp.Controllers
         }
         public static void OnStop()
         {
-            foreach (Task task in FileScannerController.ScanTasks.Values)
+            foreach (Task task in FileScannerController.scanTasks.Values)
             {
                 task.Dispose();
             }  
@@ -24,7 +24,6 @@ namespace Service_kasp.Controllers
             WebHost.CreateDefaultBuilder(args)
             .UseContentRoot(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName))
                 .UseStartup<Startup>()
-            .UseUrls("http://127.0.0.1:36458/")
-            ;
+            .UseUrls("http://127.0.0.1:36458/");
     }
 }

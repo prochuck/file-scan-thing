@@ -11,33 +11,33 @@ namespace Service_kasp.Services
     /// </summary>
     public class FileScannerService : IFileScanner
     {
-
-
         /// <summary>
         /// Список подозрительных строк
         /// </summary>
         readonly Dictionary<string, string[]> susStrings = new Dictionary<string, string[]>();
 
         /// <summary>
-        /// 
+        /// Получает имя json файла с подозрительными строками.
         /// </summary>
+        /// <param name="hostEnvironment"></param>
+        /// <param name="configuration"></param>
+        /// <exception cref="Exception"></exception>
         public FileScannerService(IWebHostEnvironment hostEnvironment,IConfiguration configuration)
         {
-            
+            //Получает имя json файла с подозрительными строками и записывает его в переменную susString
             if (!File.Exists(hostEnvironment.ContentRootPath+"\\"+configuration["SusStingsFilePath"]))
             {
                 throw new Exception($"File {hostEnvironment.ContentRootPath + "\\" + configuration["SusStingsFilePath"]} does not exist");
             }
             string jsonString = File.ReadAllText(hostEnvironment.ContentRootPath + "\\" + configuration["SusStingsFilePath"]);
             susStrings = JsonSerializer.Deserialize<Dictionary<string, string[]>>(jsonString);
-
         }
 
 
         /// <summary>
-        /// Асинхронное сканирования директорий.
+        /// Запуск асинхронного сканирования директории.
         /// </summary>
-        /// <param name="path">путь к директории для сканирования</param> 
+        /// <param name="path">Путь к директории для сканирования</param> 
         /// <returns></returns>
         async public Task<ScanResult> ScanDirectoryAsync(string path)
         {
@@ -54,8 +54,15 @@ namespace Service_kasp.Services
             result.TimeSpent = stopwatch.Elapsed.Ticks;
             return result;
         }
+        /// <summary>
+        /// Проводит асинхонное сканирование директории.
+        /// </summary>
+        /// <param name="path">Путь к директории для сканирования</param>
+        /// <param name="scanResult">Переменная, в которую будет записан результат сканирования</param>
+        /// <returns></returns>
         async Task ScanDirectoryAsync(string path, ScanResult scanResult)
         {
+            //проводим итеративный обход всех файлов и папок в ширину
             List<Task> tasks = new List<Task>();
             Queue<string> pathesToProcess = new Queue<string>() ;
             pathesToProcess.Enqueue(path);
@@ -64,11 +71,12 @@ namespace Service_kasp.Services
                 string curentPath=pathesToProcess.Dequeue();
                 try
                 {
-                    
+                    //каждая директория добавляется в очередь на обход
                     foreach (string directory in Directory.EnumerateDirectories(curentPath))
                     {
                         pathesToProcess.Enqueue(directory);
                     }
+                    //для каждого файла запускается сканирование
                     foreach (string file in Directory.EnumerateFiles(curentPath))
                     {
                         tasks.Add(Task.Run(() => ScanFile(file, scanResult)));
@@ -76,18 +84,21 @@ namespace Service_kasp.Services
                 }
                 catch (Exception)
                 {
+                    //в случае ошибки доступа к директории счётчик количества ошибок увеличиваетсяч
                     lock (scanResult)
                     {
                         scanResult.ErrorCount += 1;
                     }
                 }
-
             }
-
-           
-
+            //ожидание завершения сканирования файлов
             await Task.WhenAll(tasks);
         }
+        /// <summary>
+        /// Проводит поиск подозрительных строк в файле
+        /// </summary>
+        /// <param name="path">Путь к файле</param>
+        /// <param name="scanResult">Переменная, в которую будет записан результат сканирования</param>
         void ScanFile(string path, ScanResult scanResult)
         {
             lock (scanResult)
@@ -96,6 +107,7 @@ namespace Service_kasp.Services
             }
             try
             {
+                //определение того, содердатся ли в файле подозрительных строк, подозрительная строка для файла с таким расширением
                 string extention = Path.GetExtension(path);
                 bool hasSpecialLines = susStrings.ContainsKey(extention);
 
@@ -103,6 +115,7 @@ namespace Service_kasp.Services
                 {
 
                     if (line == null) break;
+                    //ищет в строке подозрительные подстроки, относящиеся ко всем типам файлов
                     string? res = susStrings["*"].FirstOrDefault((str) => line.Contains(str));
                     if (res is not null)
                     {
@@ -110,6 +123,7 @@ namespace Service_kasp.Services
                         break;
                     }
                     if (!hasSpecialLines) continue;
+                    //ищет в строке подозрительные подстроки, относящиеся к типу файла скинруемого файла
                     res = susStrings[extention].FirstOrDefault((str) => line.Contains(str));
                     if (res is not null)
                     {

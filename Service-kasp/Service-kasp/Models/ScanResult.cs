@@ -2,6 +2,9 @@
 
 namespace Service_kasp.Models
 {
+    /// <summary>
+    /// Модель, используемая для хранения результатов сканирования
+    /// </summary>
     public class ScanResult
     {
         public string Directory { get; set; }
