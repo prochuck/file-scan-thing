@@ -40,7 +40,7 @@ namespace ServiceControllUtil
                     switch (args[0])
                     {
                         case "scan":
-                            Console.WriteLine(ScanServiceNegotiator.SendScanRequest(args[1]);
+                            Console.WriteLine(ScanServiceNegotiator.SendScanRequest(args[1]));
                             break;
                         case "status":
                             int id;
