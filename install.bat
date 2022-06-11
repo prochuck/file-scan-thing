@@ -3,6 +3,7 @@ if not "%1"=="am_admin" (
     powershell -Command "Start-Process -Verb RunAs -FilePath '%0' -ArgumentList 'am_admin'"
     exit /b
 )
+
 rem регистрация сервиса
 sc create Korolko-Kaspersky-test-filescanner-dev binPath= %~dp0\service\Service-kasp.exe
 sc config Korolko-Kaspersky-test-filescanner-dev obj= "NT AUTHORITY\LocalService" password= ""
@@ -14,3 +15,9 @@ for /f %%i in (' sc.exe sdshow Korolko-Kaspersky-test-filescanner-dev') do set T
 
 set THING=%THING:~0,2%(A;;RPWP;;;%SID%)%THING:~2%
 sc sdset Korolko-Kaspersky-test-filescanner-dev %THING%
+
+rem добавление в system32 bat файла
+@echo off
+break > C:\Windows\System32\Korolko-FileScanner.bat
+echo @echo off >> C:\Windows\System32\Korolko-FileScanner.bat
+echo %~dp0Service-kasp\ServiceControllUtil\bin\Debug\net6.0\ServiceControllUtil.exe >> C:\Windows\System32\Korolko-FileScanner.bat
