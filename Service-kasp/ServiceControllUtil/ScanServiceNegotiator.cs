@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Diagnostics;
+
 namespace ServiceControllUtil
 {
 
@@ -20,7 +22,7 @@ namespace ServiceControllUtil
         static readonly Dictionary<string, string> shortenings;
         static ScanServiceNegotiator()
         {
-            shortenings = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(ShorteningsFileName));
+            shortenings = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)+"\\"+ShorteningsFileName));
         }
         /// <summary>
         /// отправляет службе запрос на сканирование директории
