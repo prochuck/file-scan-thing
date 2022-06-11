@@ -101,7 +101,7 @@ namespace ServiceControllUtil
         /// <returns></returns>
         static string ScanResultToString(ScanResult scanResult)
         {
-            string result = "====== Scan result ======";
+            string result = "====== Scan result ======\n";
             result += $"Directory: {scanResult.Directory}\n";
             result += $"Processed files: {scanResult.FilesCount}\n";
 
