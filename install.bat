@@ -16,7 +16,7 @@ for /f %%i in ('sc.exe sdshow Korolko-Kaspersky-test-filescanner-dev') do set TH
 set THING=%THING:~0,2%(A;;RPWP;;;%SID%)%THING:~2%
 sc sdset Korolko-Kaspersky-test-filescanner-dev %THING%
 
-rem добавление в system32 bat файла
+rem добавление в system32 bat файла, для возможности запуска программы командой Korolko-FileScanner
 @echo off
 break > C:\Windows\System32\Korolko-FileScanner.bat
 echo @echo off >> C:\Windows\System32\Korolko-FileScanner.bat
